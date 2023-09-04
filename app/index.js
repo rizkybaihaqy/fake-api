@@ -4,14 +4,22 @@ import {api} from './routes/api.js'
 import {web} from './routes/web.js'
 import {notFound} from './error/not-found.js'
 
-var original = express.response.json
+const originalJson = express.response.json
 // @ts-ignore
 express.response.json = function (obj) {
-  original.call(this, {
-    data: obj,
-    ok: this.statusCode >= 200 && this.statusCode < 300,
-    timeStamp: new Date().toISOString()
-  })
+  const ok = this.statusCode >= 200 && this.statusCode < 300
+  const timeStamp = new Date().toISOString()
+
+  const responseObj = {
+    error: ok
+      ? undefined
+      : {status: this.statusCode, ...obj},
+    data: ok ? obj : undefined,
+    ok: ok,
+    timeStamp
+  }
+
+  originalJson.call(this, responseObj)
 }
 
 const app = express()
@@ -25,12 +33,7 @@ app.use('/api/:seed', api)
 app.get('*', notFound)
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).json({
-    error: {
-      code: res.statusCode,
-      message: 'This is your fault, not mine!'
-    }
-  })
+  res.status(500).json({message: 'This is your fault, not mine!'})
 })
 
 app.listen(port, () => {

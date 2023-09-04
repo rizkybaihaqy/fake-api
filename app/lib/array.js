@@ -1,12 +1,12 @@
-import {Maybe} from 'purify-ts'
+import {Maybe, Either} from 'purify-ts'
 
 /**
  * @template T
  * @param {(value: T) => boolean} predicate
- * @returns {(arr: T[]) => Maybe<T>}
+ * @returns {(arr: T[]) => Either<Object, T>}
  */
 export const find = (predicate) => (arr) =>
-  Maybe.fromNullable(arr.find(predicate))
+  Maybe.fromNullable(arr.find(predicate)).toEither('Not found')
 
 /**
  * @template T
