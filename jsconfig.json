@@ -8,7 +8,7 @@
     "paths": {
       "#*": ["./app/*"]
     },
-    "checkJs": false
+    "checkJs": true,
   },
   "typeAcquisition": {
     "include": ["./app/models/*.js"]

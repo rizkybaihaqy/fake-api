@@ -1,94 +1,55 @@
+import {notFound} from '#error/not-found.js'
+import {filter, find} from '#lib/array.js'
+import {by} from '#lib/predicate.js'
 import express from 'express'
-import {notFound} from '../../error/not-found.js'
+import {Maybe} from 'purify-ts/Maybe'
 
 const fedium = express.Router()
 
 fedium.get('/users', (req, res) => {
-  const users = res.locals.DB.users || []
-
-  if (users.length === 0) {
-    notFound(req, res)
-    return
-  }
-
-  res.json(users)
+  Maybe.fromNullable(res.locals.DB.users)
+    .ifNothing(() => notFound(req, res))
+    .ifJust((users) => res.json(users))
 })
 fedium.get('/users/:id', (req, res) => {
-  const id = req.params.id
-  const user =
-    res.locals.DB.users.find((user) => user.id === id) || {}
+  /** @type {Maybe<User[]>} */
+  const Users = Maybe.fromNullable(res.locals.DB.users)
 
-  if (Object.keys(user).length === 0) {
-    notFound(req, res)
-    return
-  }
-
-  res.json(user)
+  Users.chain(find(by({id: req.params.id})))
+    .ifNothing(() => notFound(req, res))
+    .ifJust((user) => res.json(user))
 })
 fedium.get('/users/:id/articles', (req, res) => {
-  const id = req.params.id
-  const articles =
-    res.locals.DB.articles.filter(
-      (article) => article.author === id
-    ) || []
+  /** @type {Maybe<User[]>} */
+  const Users = Maybe.fromNullable(res.locals.DB.users)
+  /** @type {Maybe<Article[]>} */
+  const Articles = Maybe.fromNullable(res.locals.DB.articles)
 
-  if (articles.length === 0) {
-    notFound(req, res)
-    return
-  }
-
-  res.json(articles)
+  Users.chain(find(by({id: req.params.id})))
+    .chain((user) => Articles.map(filter(by({author: user.id}))))
+    .ifNothing(() => notFound(req, res))
+    .ifJust((articles) => res.json(articles))
 })
 fedium.get('/users/:userId/articles/:articleId', (req, res) => {
-  const userId = req.params.userId
-  const articleId = req.params.articleId
-  const article =
-    res.locals.DB.articles.find(
-      (article) =>
-        article.author === userId && article.id === articleId
-    ) || {}
+  /** @type {Maybe<User[]>} */
+  const Users = Maybe.fromNullable(res.locals.DB.users)
+  /** @type {Maybe<Article[]>} */
+  const Articles = Maybe.fromNullable(res.locals.DB.articles)
 
-  if (Object.keys(article).length === 0) {
-    notFound(req, res)
-    return
-  }
-
-  const user =
-    res.locals.DB.users.find((user) => user.id === article.author) ||
-    {}
-  const responses =
-    article.responses.map((id) => {
-      const response = res.locals.DB.responses.find(
-        (response) => response.id === id
-      )
-      const user = res.locals.DB.users.find(
-        (user) => user.id === response.author
-      )
-      return {...response, author: user}
-    }) || []
-
-  res.json({
-    ...article,
-    author: user,
-    responses: responses
-  })
+  Users.chain(find(by({id: req.params.userId})))
+    .chain((user) =>
+      Articles.map(filter(by({author: user.id})))
+        .chain(find(by({id: req.params.articleId})))
+        .map((article) => ({...article, author: user}))
+    )
+    .ifNothing(() => notFound(req, res))
+    .ifJust((article) => res.json(article))
 })
 
 fedium.get('/articles', (req, res) => {
-  const articles =
-    res.locals.DB.articles.map((article) => {
-      const user = res.locals.DB.users.find(
-        (user) => user.id === article.author
-      )
-      return {...article, author: user}
-    }) || []
-
-  if (articles.length === 0) {
-    notFound(req, res)
-    return
-  }
-
-  res.json(articles)
+  Maybe.fromNullable(res.locals.DB.articles)
+    .ifNothing(() => notFound(req, res))
+    .ifJust((articles) => res.json(articles))
 })
 
 export {fedium}
