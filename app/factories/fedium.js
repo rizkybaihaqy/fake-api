@@ -4,7 +4,7 @@ import {faker} from '@faker-js/faker'
  * @param {number} seed
  * @returns {Fedium}
  */
-export const Fedium = (seed) => {
+export const DB = (seed) => {
   faker.seed(seed)
 
   const users = Array.from({length: 10}, () => {
@@ -19,14 +19,6 @@ export const Fedium = (seed) => {
       password: faker.internet.password({memorable: true}),
       avatar: faker.internet.avatar(),
       memberAt: faker.date.past()
-    }
-  })
-
-  const responses = Array.from({length: 1000}, () => {
-    return {
-      id: faker.string.nanoid(),
-      body: faker.lorem.paragraphs(1),
-      author: faker.helpers.arrayElement(users).id
     }
   })
 
@@ -45,22 +37,34 @@ export const Fedium = (seed) => {
       tags: Array.from({length: faker.number.int(3)}, () =>
         faker.company.catchPhraseDescriptor()
       ),
-      claps: Array.from(
-        {length: faker.number.int(10)},
-        () => faker.helpers.arrayElement(users).id
-      ),
-      responses: Array.from(
-        {length: faker.number.int(5)},
-        () => faker.helpers.arrayElement(responses).id
-      ),
       author: faker.helpers.arrayElement(users).id,
       lastModifiedAt: faker.date.past()
+    }
+  })
+
+  const responses = Array.from({length: 1000}, () => {
+    return {
+      id: faker.string.nanoid(),
+      body: `${faker.word.interjection()}! ${
+        faker.word.verb()
+      } ${faker.word.adjective()}!`,
+      author: faker.helpers.arrayElement(users).id,
+      article: faker.helpers.arrayElement(articles).id
+    }
+  })
+
+  const claps = Array.from({length: 10000}, () => {
+    return {
+      id: faker.string.nanoid(),
+      user: faker.helpers.arrayElement(users).id,
+      article: faker.helpers.arrayElement(articles).id
     }
   })
 
   return {
     users,
     articles,
-    responses
+    responses,
+    claps
   }
 }

@@ -56,6 +56,26 @@ const getArticle = (id) => (articles) =>
     status: 404
   })
 
+/**
+ * @param {Fedium} DB
+ * @returns {Either<AppError, Respons[]>}
+ */
+const getResponses = (DB) =>
+  Maybe.fromNullable(DB.responses).toEither({
+    message: 'Something went wrong with the factory',
+    status: 500
+  })
+
+/**
+ * @param {Fedium} DB
+ * @returns {Either<AppError, Clap[]>}
+ */
+const getClaps = (DB) =>
+  Maybe.fromNullable(DB.claps).toEither({
+    message: 'Something went wrong with the factory',
+    status: 500
+  })
+
 fedium.get('/users', (req, res) => {
   Given(res.locals)
     .chain(getUsers)
@@ -99,6 +119,71 @@ fedium.get('/users/:userId/articles/:articleId', (req, res) => {
     )
     .ifLeft((error) => res.status(error.status).json(error))
     .ifRight((users) => res.json(users))
+})
+fedium.get(
+  '/users/:userId/articles/:articleId/response',
+  (req, res) => {
+    Given(res.locals)
+      .chain(getUsers)
+      .chain(getUser(req.params.userId))
+      .chain((user) =>
+        Given(res.locals)
+          .chain(getArticles)
+          .map((articles) =>
+            articles.filter((article) => article.author === user.id)
+          )
+          .chain(getArticle(req.params.articleId))
+      )
+      .chain((article) =>
+        Given(res.locals)
+          .chain(getResponses)
+          .map((responses) =>
+            responses.filter(
+              (response) => response.article === article.id
+            )
+          )
+      )
+      .map((responses) =>
+        responses.map((response) =>
+          Given(res.locals)
+            .chain(getUsers)
+            .chain(getUser(response.author))
+            .map((user) => ({...response, author: user}))
+        )
+      )
+      .ifLeft((error) => res.status(error.status).json(error))
+      .ifRight((responses) => res.json(responses))
+  }
+)
+fedium.get('/users/:userId/articles/:articleId/claps', (req, res) => {
+  Given(res.locals)
+    .chain(getUsers)
+    .chain(getUser(req.params.userId))
+    .chain((user) =>
+      Given(res.locals)
+        .chain(getArticles)
+        .map((articles) =>
+          articles.filter((article) => article.author === user.id)
+        )
+        .chain(getArticle(req.params.articleId))
+    )
+    .chain((article) =>
+      Given(res.locals)
+        .chain(getClaps)
+        .map((claps) =>
+          claps.filter((clap) => clap.article === article.id)
+        )
+    )
+    .map((claps) =>
+      claps.map((clap) =>
+        Given(res.locals)
+          .chain(getUsers)
+          .chain(getUser(clap.user))
+          .map((user) => ({...clap, author: user}))
+      )
+    )
+    .ifLeft((error) => res.status(error.status).json(error))
+    .ifRight((responses) => res.json(responses))
 })
 
 fedium.get('/articles', (req, res) => {

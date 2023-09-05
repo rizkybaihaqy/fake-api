@@ -3,6 +3,7 @@
  * @property {User[]} users
  * @property {Article[]} articles
  * @property {Respons[]} responses
+ * @property {Clap[]} claps
  */
 
 /**
@@ -25,8 +26,6 @@
  * @property {string} image
  * @property {string[]} topics
  * @property {string[]} tags
- * @property {string[]} claps
- * @property {string[]} responses
  * @property {string} author
  * @property {Date} lastModifiedAt
  */
@@ -36,4 +35,12 @@
  * @property {string} id
  * @property {string} body
  * @property {string} author
+ * @property {string} article
+ */
+
+/**
+ * @typedef {Object} Clap
+ * @property {string} id
+ * @property {string} user
+ * @property {string} article
  */
