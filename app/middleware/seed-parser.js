@@ -11,12 +11,14 @@ export const seedParser = async (req, res, next) => {
     .split('')
     .reduce((acc, char) => acc + char.charCodeAt(0), 0)
 
-  try {
-    const {DB} = await import(`#factories/${app}.js`)
+  res.locals.seed = seed
+  next()
+  // try {
+  //   const {DB} = await import(`#factories/${app}.js`)
 
-    res.locals.DB = DB(seed)
-    next()
-  } catch (error) {
-    next(error)
-  }
+  //   res.locals.DB = DB(seed)
+  //   next()
+  // } catch (error) {
+  //   next(error)
+  // }
 }

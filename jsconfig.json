@@ -8,9 +8,9 @@
     "paths": {
       "#*": ["./app/*"]
     },
-    "checkJs": true,
+    "checkJs": true
   },
   "typeAcquisition": {
-    "include": ["./app/models/*.js"]
+    "include": ["./app/models/*.js", "./app/types/*.js"]
   }
 }
