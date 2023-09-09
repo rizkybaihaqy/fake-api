@@ -1,46 +1,93 @@
-/**
- * @typedef {Object} Fedium
- * @property {User[]} users
- * @property {Article[]} articles
- * @property {Respons[]} responses
- * @property {Clap[]} claps
- */
+import {seedParser, unSlugify} from '#lib/string.js'
+import {faker} from '@faker-js/faker'
 
-/**
- * @typedef User
- * @property {string} id
- * @property {string} firstName
- * @property {string} lastName
- * @property {string} email
- * @property {string} password
- * @property {string} avatar
- * @property {Date} memberAt
- */
+export const fedium = {
+  /**
+   *
+   * @param {string} id
+   * @returns {User}
+   */
+  user: (id) => {
+    faker.seed(seedParser(id))
 
-/**
- * @typedef {Object} Article
- * @property {string} id
- * @property {string} title
- * @property {string} subtitle
- * @property {string} body
- * @property {string} image
- * @property {string[]} topics
- * @property {string[]} tags
- * @property {string} author
- * @property {Date} lastModifiedAt
- */
+    const firstName =
+      id.split(/[._]/)[0].replace(/\d/g, '') ||
+      faker.person.firstName()
+    const lastName =
+      id.split(/[._]/)[1]?.replace(/\d/g, '') ||
+      faker.person.lastName()
 
-/**
- * @typedef {Object} Respons
- * @property {string} id
- * @property {string} body
- * @property {string} author
- * @property {string} article
- */
+    return {
+      id,
+      firstName,
+      lastName,
+      email: faker.internet.email({
+        firstName,
+        lastName
+      }),
+      password: faker.internet.password({
+        memorable: true
+      }),
+      avatar: faker.internet.avatar(),
+      memberAt: faker.date.past()
+    }
+  },
 
-/**
- * @typedef {Object} Clap
- * @property {string} id
- * @property {string} user
- * @property {string} article
- */
+  /**
+   *
+   * @param {string} id
+   * @param {User} user
+   * @returns {Article}
+   */
+  article: (id, user) => {
+    faker.seed(seedParser(id))
+
+    return {
+      id,
+      title: unSlugify(id),
+      subtitle: faker.lorem.sentence(),
+      body: faker.lorem.paragraphs(10),
+      image: faker.image.url(),
+      topics: Array.from({length: faker.number.int(3)}, () =>
+        faker.company.catchPhraseAdjective()
+      ),
+      tags: Array.from({length: faker.number.int(3)}, () =>
+        faker.company.catchPhraseDescriptor()
+      ),
+      author: user.id,
+      lastModifiedAt: faker.date.past()
+    }
+  },
+
+  /**
+   *
+   * @param {string} userId
+   * @param {Article} article
+   * @returns {Respons}
+   */
+  response: (userId, article) => {
+    faker.seed(seedParser(userId) + seedParser(article.id))
+
+    return {
+      id: faker.string.nanoid(),
+      body: `${faker.word.interjection()}! ${faker.word.verb()} ${faker.word.adjective()}!`,
+      article: article.id,
+      author: userId
+    }
+  },
+
+  /**
+   * @param {string} userId
+   * @param {Article} article
+   * @returns {Clap}
+   */
+  clap: (userId, article) => {
+    faker.seed(seedParser(userId) + seedParser(article.id))
+
+    return {
+      id: faker.string.nanoid(),
+      article: article.id,
+      user: userId
+    }
+  }
+}
