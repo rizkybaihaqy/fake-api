@@ -2,7 +2,9 @@
 v: 0
 micros:
   - name: fake-api
-    src: ./app
+    src: .
     engine: nodejs16
     primary: true
+    public: true
     dev: npm run dev
+    run: node ./app/index.js
