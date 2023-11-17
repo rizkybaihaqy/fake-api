@@ -2,41 +2,41 @@ import {User} from '#model/user.js'
 import {createUnique} from '#utils/array.js'
 import {parseSeed} from '#utils/parser.js'
 import {faker} from '@faker-js/faker'
-import {Just, Maybe} from 'purify-ts'
+import {Left, Right} from 'purify-ts'
 
 /**
  * @param {number} seed
  */
 export const Users = (seed) => ({
-  /**
-   * @param {Query} query
-   */
-  fetch: ({limit, page, filter}) => {
+  fetch: ({limit = 10, page = 1, filter = ''}) => {
     faker.seed(seed + parseSeed(filter))
 
-    const total = faker.number.int()
+    const totalData = filter
+      ? faker.number.int(2786962000)
+      : Number.MAX_SAFE_INTEGER
+
+    const totalPage = Math.ceil(totalData / limit)
 
     faker.seed(seed + limit + page + parseSeed(filter))
 
-    return Maybe.fromPredicate(
-      (lim) => Math.ceil(total / lim) >= page,
-      limit
-    )
-      .map((lim) =>
-        createUnique(lim, () =>
-          filter
-            ? faker.internet.userName({firstName: filter})
-            : faker.internet.userName()
-        )
+    if (page > totalPage) {
+      return Left(
+        `Problem with the value of property \"page\": Expected a number less than ${totalPage}, but received a number with value ${page}`
       )
-      .map((users) => users.map(User))
-      .alt(Just([]))
-      .map((users) => ({
-        users,
-        limit,
-        total: total,
-        page: {total: Math.ceil(total / limit), current: page}
-      }))
+    }
+
+    const users = createUnique(limit, () =>
+      filter
+        ? faker.internet.userName({firstName: filter})
+        : faker.internet.userName()
+    ).map(User)
+
+    return Right({
+      users,
+      limit,
+      total: totalData,
+      page: {total: totalPage, current: page}
+    })
   },
   /**
    * @param {string} id
