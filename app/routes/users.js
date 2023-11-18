@@ -1,5 +1,5 @@
 import {User} from '#model/user.js'
-import {DB} from '#repositories/users.js'
+import {DB} from '#utils/db.js'
 import {NumberFromString} from '#utils/codec.js'
 import express from 'express'
 import {Codec, Right, optional, string} from 'purify-ts'
@@ -8,8 +8,9 @@ const users = express.Router()
 
 users.get('/users', (req, res) => {
   Codec.interface({
-    limit: optional(NumberFromString),
-    page: optional(NumberFromString)
+    _limit: optional(NumberFromString),
+    _page: optional(NumberFromString),
+    username: optional(string)
   })
     .decode(req.query)
     .chain(DB(res.locals.seed, User).fetch)
@@ -30,6 +31,7 @@ users.get('/users/:id', (req, res) => {
 
 users.post('/users', (req, res) => {
   Codec.interface({
+    username: string,
     firstName: string,
     lastName: string,
     email: string,

@@ -4,12 +4,13 @@ import {faker} from '@faker-js/faker'
 /**
  * @typedef User
  * @property {string} id
+ * @property {string} username
  * @property {string} firstName
  * @property {string} lastName
  * @property {string} email
  * @property {string} password
  * @property {string} avatar
- * @property {Date} memberAt
+ * @property {Date} createdAt
  */
 
 /**
@@ -20,10 +21,7 @@ const createUser = (user) => user
 export const User = {
   create: createUser,
 
-  /**
-   * @param {string} id
-   */
-  generate: (id) => {
+  generate: ({id, username}) => {
     faker.seed(parseSeed(id))
 
     const firstName = faker.person.firstName()
@@ -31,6 +29,18 @@ export const User = {
 
     return createUser({
       id: id.toLowerCase(),
+      username: (username
+        ? faker.internet.userName({
+            firstName: faker.datatype.boolean()
+              ? username
+              : undefined,
+            lastName: faker.datatype.boolean() ? username : undefined
+          })
+        : faker.internet.userName({
+            firstName,
+            lastName
+          })
+      ).toLowerCase(),
       firstName: firstName,
       lastName: lastName,
       email: faker.internet.email({
@@ -41,7 +51,7 @@ export const User = {
         memorable: true
       }),
       avatar: faker.internet.avatar(),
-      memberAt: faker.date.past()
+      createdAt: faker.date.past()
     })
   }
 }
