@@ -25,6 +25,10 @@ users.get('/users', (req, res) => {
 users.get('/users/:id', (req, res) => {
   Right(req.params.id)
     .chain(DB(res.locals.seed, User).get)
+    .mapLeft((error) => ({
+      message: error,
+      status: 400
+    }))
     .ifRight((users) => res.json(users))
     .ifLeft((error) => res.status(400).json(error))
 })

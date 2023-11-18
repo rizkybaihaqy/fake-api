@@ -1,6 +1,6 @@
 import {createUnique} from '#utils/array.js'
 import {faker} from '@faker-js/faker'
-import {Left, Right} from 'purify-ts'
+import {Left, Maybe, Right} from 'purify-ts'
 
 /**
  * @template T
@@ -42,7 +42,10 @@ export const DB = (seed, Model) => ({
   /**
    * @param {string} id
    */
-  get: (id) => Right(Model.generate({id})),
+  get: (id) =>
+    Maybe.fromPredicate((id) => /^[a-zA-Z0-9_-]{21}$/.test(id), id)
+      .toEither('Invalid id')
+      .map((id) => Model.generate({id})),
 
   add: (fields) => {
     faker.seed(seed)
