@@ -15,31 +15,33 @@ import {faker} from '@faker-js/faker'
 /**
  * @param {User} user
  */
-export const createUser = (user) => user
+const createUser = (user) => user
 
-/**
- * @param {string} id
- */
-export const generateUser = (id) => {
-  faker.seed(parseSeed(id))
+export const User = {
+  create: createUser,
 
-  const firstName =
-    id.split(/[._]/)[0].replace(/\d/g, '') || faker.person.firstName()
-  const lastName =
-    id.split(/[._]/)[1]?.replace(/\d/g, '') || faker.person.lastName()
+  /**
+   * @param {string} id
+   */
+  generate: (id) => {
+    faker.seed(parseSeed(id))
 
-  return createUser({
-    id: id.toLowerCase(),
-    firstName: firstName,
-    lastName: lastName,
-    email: faker.internet.email({
-      firstName,
-      lastName
-    }),
-    password: faker.internet.password({
-      memorable: true
-    }),
-    avatar: faker.internet.avatar(),
-    memberAt: faker.date.past()
-  })
+    const firstName = faker.person.firstName()
+    const lastName = faker.person.lastName()
+
+    return createUser({
+      id: id.toLowerCase(),
+      firstName: firstName,
+      lastName: lastName,
+      email: faker.internet.email({
+        firstName,
+        lastName
+      }),
+      password: faker.internet.password({
+        memorable: true
+      }),
+      avatar: faker.internet.avatar(),
+      memberAt: faker.date.past()
+    })
+  }
 }
