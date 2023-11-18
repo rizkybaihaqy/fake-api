@@ -1,4 +1,4 @@
-import {User} from '#model/user.js'
+import {createUser, generateUser} from '#model/user.js'
 import {createUnique} from '#utils/array.js'
 import {parseSeed} from '#utils/parser.js'
 import {faker} from '@faker-js/faker'
@@ -29,7 +29,7 @@ export const Users = (seed) => ({
       filter
         ? faker.internet.userName({firstName: filter})
         : faker.internet.userName()
-    ).map(User)
+    ).map(generateUser)
 
     return Right({
       users,
@@ -38,11 +38,36 @@ export const Users = (seed) => ({
       page: {total: totalPage, current: page}
     })
   },
+
   /**
    * @param {string} id
-   * @returns {User}
    */
-  get: (id) => {
-    return User(id)
-  }
+  get: (id) => Right(generateUser(id)),
+
+  add: ({firstName, lastName, email, password, avatar}) => {
+    faker.seed(
+      seed +
+        parseSeed(firstName + lastName + email + password + avatar)
+    )
+
+    return Right(
+      createUser({
+        id: faker.internet
+          .userName({
+            firstName: firstName,
+            lastName: lastName
+          })
+          .toLowerCase(),
+        firstName: firstName,
+        lastName,
+        email: email,
+        password: password,
+        avatar: avatar,
+        memberAt: new Date()
+      })
+    )
+  },
+
+  edit: ({id, ...newData}) =>
+    Right(createUser({...generateUser(id), ...newData}))
 })

@@ -1,6 +1,6 @@
-import {Codec, Left, Right, optional, string} from 'purify-ts'
+import {Codec, Left, Right, string} from 'purify-ts'
 
-const NumberFromString = Codec.custom({
+export const NumberFromString = Codec.custom({
   decode: (input) =>
     string
       .decode(input)
@@ -13,10 +13,4 @@ const NumberFromString = Codec.custom({
           : Right(num)
       ),
   encode: (input) => input.toString()
-})
-
-export const QueryParams = Codec.interface({
-  limit: optional(NumberFromString),
-  page: optional(NumberFromString),
-  filter: optional(string)
 })

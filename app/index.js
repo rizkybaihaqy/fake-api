@@ -1,6 +1,7 @@
 import {routes} from '#routes.js'
 import express from 'express'
 import morgan from 'morgan'
+import bodyParser from 'body-parser'
 
 const originalJson = express.response.json
 // @ts-ignore
@@ -24,6 +25,7 @@ const port = process.env.PORT || 8080
 app.use(morgan('dev'))
 
 app.use(express.static('public'))
+app.use(bodyParser.json())
 
 app.use('/api/:seed', routes)
 

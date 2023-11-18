@@ -2,19 +2,25 @@ import {parseSeed} from '#utils/parser.js'
 import {faker} from '@faker-js/faker'
 
 /**
- *
- * @param {User | string} userOrId
- * @returns {User}
+ * @typedef User
+ * @property {string} id
+ * @property {string} firstName
+ * @property {string} lastName
+ * @property {string} email
+ * @property {string} password
+ * @property {string} avatar
+ * @property {Date} memberAt
  */
-export const User = (userOrId) => {
-  const id =
-    typeof userOrId === 'string'
-      ? userOrId
-      : faker.internet.userName({
-          firstName: userOrId?.firstName,
-          lastName: userOrId?.firstName
-        })
 
+/**
+ * @param {User} user
+ */
+export const createUser = (user) => user
+
+/**
+ * @param {string} id
+ */
+export const generateUser = (id) => {
   faker.seed(parseSeed(id))
 
   const firstName =
@@ -22,10 +28,10 @@ export const User = (userOrId) => {
   const lastName =
     id.split(/[._]/)[1]?.replace(/\d/g, '') || faker.person.lastName()
 
-  return {
-    id: id.charAt(0).toUpperCase() + id.slice(1),
+  return createUser({
+    id: id.toLowerCase(),
     firstName: firstName,
-    lastName,
+    lastName: lastName,
     email: faker.internet.email({
       firstName,
       lastName
@@ -35,5 +41,5 @@ export const User = (userOrId) => {
     }),
     avatar: faker.internet.avatar(),
     memberAt: faker.date.past()
-  }
+  })
 }
