@@ -19,6 +19,8 @@ import {faker} from '@faker-js/faker'
 const createUser = (user) => user
 
 export const User = {
+  name: 'user',
+
   create: createUser,
 
   generate: ({id, username}) => {
@@ -28,7 +30,7 @@ export const User = {
     const lastName = faker.person.lastName()
 
     return createUser({
-      id: id.toLowerCase(),
+      id,
       username: (username
         ? faker.internet.userName({
             firstName: faker.datatype.boolean()

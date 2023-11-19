@@ -23,6 +23,8 @@ const emptyNote = createNote({
 })
 
 export const Note = {
+  name: 'note',
+
   create: createNote,
 
   generate: ({id, note}) => {
@@ -63,7 +65,7 @@ export const Note = {
     }
 
     return createNote({
-      id: id.toLowerCase(),
+      id,
       note: faker.helpers.mustache(phrase, data),
       createdAt: faker.date.past()
     })

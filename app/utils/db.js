@@ -7,12 +7,17 @@ import {parseSeed} from './parser.js'
  * @template T
  * @param {number} seed
  * @param {Object} Model
+ * @param {string} Model.name
  * @param {(arg0: T) => T} Model.create
  * @param {(arg0: { id: any, [key: string]: any }) => T} Model.generate
  */
 export const DB = (seed, Model) => ({
   fetch: ({_limit = 10, _page = 1, ...fields}) => {
-    faker.seed(seed + parseSeed(Object.entries(fields).join('')))
+    faker.seed(
+      seed +
+        parseSeed(Model.name) +
+        parseSeed(Object.entries(fields).join(''))
+    )
 
     const totalData = Object.keys(fields).length
       ? faker.number.int(10000000)
@@ -24,6 +29,7 @@ export const DB = (seed, Model) => ({
       seed +
         _limit +
         _page +
+        parseSeed(Model.name) +
         parseSeed(Object.entries(fields).join(''))
     )
 
@@ -51,7 +57,7 @@ export const DB = (seed, Model) => ({
    */
   get: (id) =>
     Maybe.fromPredicate((id) => /^[a-zA-Z0-9_-]{21}$/.test(id), id)
-      .toEither('Invalid id')
+      .toEither(`Invalid ${Model.name} id`)
       .map((id) => Model.generate({id})),
 
   add: (fields) => {
