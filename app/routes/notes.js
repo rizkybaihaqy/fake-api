@@ -18,7 +18,7 @@ notes.get('/notes', (req, res) => {
       message: error,
       status: 400
     }))
-    .ifRight((users) => res.json(users))
+    .ifRight((notes) => res.json(notes))
     .ifLeft((error) => res.status(400).json(error))
 })
 

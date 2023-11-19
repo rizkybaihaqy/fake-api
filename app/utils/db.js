@@ -33,13 +33,13 @@ export const DB = (seed, Model) => ({
       )
     }
 
-    const users = createUnique(_limit, () => faker.string.nanoid())
+    const data = createUnique(_limit, () => faker.string.nanoid())
       .map((id) => Model.generate({id: id, ...fields}))
       .map((data) => (Object.values(data).includes('') ? null : data))
       .filter((data) => data)
 
     return Right({
-      users,
+      data,
       limit: _limit,
       total: totalData,
       page: {total: totalPage, current: _page}
