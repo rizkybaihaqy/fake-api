@@ -5,6 +5,7 @@ import {faker} from '@faker-js/faker'
  * @typedef Note
  * @property {string} id
  * @property {string} note
+ * @property {string} userId
  * @property {Date} createdAt
  */
 
@@ -19,6 +20,7 @@ const createNote = (note) => note
 const emptyNote = createNote({
   id: '',
   note: '',
+  userId: '',
   createdAt: new Date()
 })
 
@@ -67,6 +69,7 @@ export const Note = {
     return createNote({
       id,
       note: faker.helpers.mustache(phrase, data),
+      userId: faker.string.nanoid(),
       createdAt: faker.date.past()
     })
   }

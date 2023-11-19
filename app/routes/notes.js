@@ -22,6 +22,14 @@ notes.get('/notes', (req, res) => {
   })
     .decode(req.query)
     .chain(DB(res.locals.seed, Note).fetch)
+    .map((notes) => ({
+      ...notes,
+      data: notes.data.map((note) =>
+        DB(res.locals.seed, User)
+          .get(note.userId)
+          .map((user) => ({...note, user}))
+      )
+    }))
     .mapLeft((error) => ({
       message: error,
       status: 400
