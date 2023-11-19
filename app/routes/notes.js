@@ -3,14 +3,7 @@ import {User} from '#model/user.js'
 import {NumberFromString} from '#utils/codec.js'
 import {DB} from '#utils/db.js'
 import express from 'express'
-import {
-  Codec,
-  Either,
-  Right,
-  Tuple,
-  optional,
-  string
-} from 'purify-ts'
+import {Codec, Right, optional, string} from 'purify-ts'
 
 const notes = express.Router()
 
@@ -29,6 +22,10 @@ notes.get('/notes', (req, res) => {
           .get(note.userId)
           .map((user) => ({...note, user}))
       )
+    }))
+    .map(({data, ...rest}) => ({
+      notes: data.map((note) => note),
+      ...rest
     }))
     .mapLeft((error) => ({
       message: error,
@@ -52,6 +49,11 @@ notes.get('/users/:id/notes', (req, res) => {
         .get(req.params.id)
         .map((user) => ({user, ...notes}))
     )
+    .map(({data, user, ...rest}) => ({
+      user,
+      notes: data.map((note) => note),
+      ...rest
+    }))
     .mapLeft((error) => ({
       message: error,
       status: 400

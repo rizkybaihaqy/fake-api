@@ -1,6 +1,6 @@
 import {User} from '#model/user.js'
-import {DB} from '#utils/db.js'
 import {NumberFromString} from '#utils/codec.js'
+import {DB} from '#utils/db.js'
 import express from 'express'
 import {Codec, Right, optional, string} from 'purify-ts'
 
@@ -14,6 +14,10 @@ users.get('/users', (req, res) => {
   })
     .decode(req.query)
     .chain(DB(res.locals.seed, User).fetch)
+    .map(({data, ...rest}) => ({
+      users: data.map((user) => user),
+      ...rest
+    }))
     .mapLeft((error) => ({
       message: error,
       status: 400
