@@ -1,6 +1,7 @@
 import {createUnique} from '#utils/array.js'
 import {faker} from '@faker-js/faker'
 import {Left, Maybe, Right} from 'purify-ts'
+import {parseSeed} from './parser.js'
 
 /**
  * @template T
@@ -11,7 +12,7 @@ import {Left, Maybe, Right} from 'purify-ts'
  */
 export const DB = (seed, Model) => ({
   fetch: ({_limit = 10, _page = 1, ...fields}) => {
-    faker.seed(seed)
+    faker.seed(seed + parseSeed(Object.entries(fields).join('')))
 
     const totalData = Object.keys(fields).length
       ? faker.number.int(10000000)
@@ -19,7 +20,12 @@ export const DB = (seed, Model) => ({
 
     const totalPage = Math.ceil(totalData / _limit)
 
-    faker.seed(seed + _limit + _page)
+    faker.seed(
+      seed +
+        _limit +
+        _page +
+        parseSeed(Object.entries(fields).join(''))
+    )
 
     if (_page > totalPage) {
       return Left(
@@ -27,9 +33,10 @@ export const DB = (seed, Model) => ({
       )
     }
 
-    const users = createUnique(_limit, () =>
-      faker.string.nanoid()
-    ).map((id) => Model.generate({id: id, ...fields}))
+    const users = createUnique(_limit, () => faker.string.nanoid())
+      .map((id) => Model.generate({id: id, ...fields}))
+      .map((data) => (Object.values(data).includes('') ? null : data))
+      .filter((data) => data)
 
     return Right({
       users,
