@@ -53,8 +53,8 @@ notes.get('/users/:id/notes', (req, res) => {
     .ifLeft((error) => res.status(400).json(error))
 })
 
-notes.get('/users/:userId/notes/:noteId', (req, res) => {
-  Right({userId: req.params.userId, noteId: req.params.noteId})
+notes.get('/users/:userId/notes/:id', (req, res) => {
+  Right({userId: req.params.userId, noteId: req.params.id})
     .chain(({noteId, userId}) =>
       DB(res.locals.seed, Note)
         .get(noteId)
@@ -71,6 +71,41 @@ notes.get('/users/:userId/notes/:noteId', (req, res) => {
     }))
     .ifRight((data) => res.json(data))
     .ifLeft((error) => res.status(400).json(error))
+})
+
+notes.post('/users/:id/notes', (req, res) => {
+  Codec.interface({
+    note: string
+  })
+    .decode(req.body)
+    .map((note) => ({...note, userId: req.params.id}))
+    .chain(DB(res.locals.seed, Note).add)
+    .mapLeft((error) => ({
+      message: error,
+      status: 400
+    }))
+    .ifRight((note) => res.json(note))
+    .ifLeft((error) => res.status(400).json(error))
+})
+
+notes.put('/users/:userId/notes/:id', (req, res) => {
+  Codec.interface({
+    id: string,
+    note: string,
+    userId: string
+  })
+    .decode({...req.params, ...req.body})
+    .chain(DB(res.locals.seed, Note).edit)
+    .mapLeft((error) => ({
+      message: error,
+      status: 400
+    }))
+    .ifRight((users) => res.json(users))
+    .ifLeft((error) => res.status(400).json(error))
+})
+
+notes.delete('/users/:userId/notes/:id', (req, res) => {
+  res.status(200).json({id: req.params.id})
 })
 
 export {notes}

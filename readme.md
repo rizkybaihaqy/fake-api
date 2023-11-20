@@ -137,7 +137,7 @@ Opinionated fake REST API for testing purposes.
 
 ### Note
 
-#### GET `/users/:userId/notes/:notesId`
+#### GET `/users/:userId/notes/:id`
 
 ```json
 {
@@ -153,7 +153,7 @@ Opinionated fake REST API for testing purposes.
 }
 ```
 
-#### GET `/users/:userId/notes?limit=10&page=1&note=''`
+#### GET `/users/:id/notes?limit=10&page=1&note=''`
 
 ```json
 {
@@ -171,6 +171,56 @@ Opinionated fake REST API for testing purposes.
     "total": 900719925474100,
     "current": 1
   }
+}
+```
+
+#### POST `/users/:id/notes`
+
+#### Request
+
+```json
+{
+  "note": "He paved the way, we walk through it."
+}
+```
+
+#### Response
+
+```json
+{
+  "id": "tLcLj2JbPUGk0joCm8CUu",
+  "note": "He paved the way, we walk through it.",
+  "userId": "mJdj087htRBwy_rub2kwv",
+  "createdAt": "2023-11-20T11:56:33.583Z"
+}
+```
+
+#### PUT `/users/:userId/notes/:id`
+
+#### Request
+
+```json
+{
+  "note": "He paved the way, we'll walk through it."
+}
+```
+
+#### Response
+
+```json
+{
+  "id": "tLcLj2JbPUGk0j6cm8CUU",
+  "note": "He paved the way, we'll walk through it.",
+  "userId": "mjDjk22htGTwy_rub2kwv",
+  "createdAt": "2023-05-27T21:33:21.902Z"
+}
+```
+
+#### DELETE `/users/:userId/notes/:id`
+
+```json
+{
+  "id": "tLcLj2JbPUGk0j0cm8CUU"
 }
 ```
 
