@@ -181,6 +181,9 @@ Opinionated fake REST API for testing purposes.
   "notes": [
     {
       /* ... */
+      "user": {
+        /* ... */
+      }
     }
   ],
   "limit": 10,

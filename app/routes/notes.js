@@ -15,17 +15,13 @@ notes.get('/notes', (req, res) => {
   })
     .decode(req.query)
     .chain(DB(res.locals.seed, Note).fetch)
-    .map((notes) => ({
-      ...notes,
-      data: notes.data.map((note) =>
+    .map(({data, ...rest}) => ({
+      ...rest,
+      notes: data.map((note) =>
         DB(res.locals.seed, User)
           .get(note.userId)
           .map((user) => ({...note, user}))
       )
-    }))
-    .map(({data, ...rest}) => ({
-      notes: data.map((note) => note),
-      ...rest
     }))
     .mapLeft((error) => ({
       message: error,
@@ -44,16 +40,11 @@ notes.get('/users/:id/notes', (req, res) => {
     .decode(req.query)
     .map((query) => ({...query, userId: req.params.id}))
     .chain(DB(res.locals.seed, Note).fetch)
-    .chain((notes) =>
+    .chain(({data, ...rest}) =>
       DB(res.locals.seed, User)
         .get(req.params.id)
-        .map((user) => ({user, ...notes}))
+        .map((user) => ({user, notes: data, ...rest}))
     )
-    .map(({data, user, ...rest}) => ({
-      user,
-      notes: data.map((note) => note),
-      ...rest
-    }))
     .mapLeft((error) => ({
       message: error,
       status: 400
