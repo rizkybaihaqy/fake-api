@@ -4,6 +4,30 @@ Opinionated fake REST API for testing purposes.
 
 ## The Routes
 
+- [Base URL](#base-url)
+- [Response](#response)
+  - [Success](#success)
+  - [Error](#error)
+- [User](#user)
+  - [GET `/users/:id`](#get-usersid)
+  - [GET `/users?limit=10&page=1&username=''`](#get-userslimit10page1username)
+  - [POST `/users`](#post-users)
+  - [PUT `/users/:id`](#put-usersid)
+  - [DELETE `/users/:id`](#delete-usersid)
+- [Note](#note)
+  - [GET `/users/:userId/notes/:id`](#get-usersuseridnotesid)
+  - [GET `/users/:id/notes?limit=10&page=1&note=''`](#get-usersidnoteslimit10page1note)
+  - [POST `/users/:id/notes`](#post-usersidnotes)
+  - [PUT `/users/:userId/notes/:id`](#put-usersuseridnotesid)
+  - [DELETE `/users/:userId/notes/:id`](#delete-usersuseridnotesid)
+  - [GET `/notes?limit=10&page=1&note=''`](#get-noteslimit10page1note)
+
+### Base URL
+
+`https://fakeapi-1-o3918279.deta.app/api/:seed/`
+
+Set the `:seed` to any string you want. It will be used to generate the data. Change the `:seed` to get different data.
+
 ### Response
 
 #### Success
