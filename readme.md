@@ -21,6 +21,13 @@ Opinionated fake REST API for testing purposes.
   - [PUT `/users/:userId/notes/:id`](#put-usersuseridnotesid)
   - [DELETE `/users/:userId/notes/:id`](#delete-usersuseridnotesid)
   - [GET `/notes?limit=10&page=1&note=''`](#get-noteslimit10page1note)
+- [E-Commerce](#e-commerce)
+  - [GET `/shops/:id`](#get-shopsid)
+  - [GET `/shops?limit=10&page=1&name=''`](#get-shopslimit10page1name)
+  - [GET `/shops/:id/products/:id`](#get-shopsidproductsid)
+  - [GET `/shops/:id/products?limit=10&page=1&name=''`](#get-shopsidproductslimit10page1name)
+  - [GET `/products?limit=10&page=1&name=''`](#get-productslimit10page1name)
+  - [GET `/orders?limit=10&page=1`](#get-orderslimit10page1)
 
 ### Base URL
 
@@ -258,6 +265,130 @@ Set the `:seed` to any string you want. It will be used to generate the data. Ch
       "user": {
         /* ... */
       }
+    }
+  ],
+  "limit": 10,
+  "total": 9007199254740991,
+  "page": {
+    "total": 900719925474100,
+    "current": 1
+  }
+}
+```
+
+### E-Commerce
+
+#### GET `/shops/:id`
+
+```json
+{
+  "id": "tLcLj2JbPUGk0j0cm8CUU",
+  "name": "Towels Licensed",
+  "logo": "https://loremflickr.com/640/480/shop,logo?lock=1",
+  "createdAt": "2023-10-21T06:52:55.585Z"
+}
+```
+
+#### GET `/shops?limit=10&page=1&name=''`
+
+```json
+{
+  "shops": [
+    {
+      /* ... */
+    }
+  ],
+  "limit": 10,
+  "total": 9007199254740991,
+  "page": {
+    "total": 900719925474100,
+    "current": 1
+  }
+}
+```
+
+#### GET `/shops/:id/products/:id`
+
+```json
+{
+  "product": {
+    "id": "tLcLj2JbPUGk0j0cm8CUU",
+    "name": "Handcrafted Cotton Keyboard",
+    "description": "The slim & simple Maple Gaming Keyboard from ...",
+    "price": 100,
+    "shopId": "6SL_RKG6ks4DAfT2FXOqI",
+    "createdAt": "2023-10-21T06:52:55.585Z"
+  },
+  "shop": {
+    /* ... */
+  }
+}
+```
+
+#### GET `/shops/:id/products?limit=10&page=1&name=''`
+
+```json
+{
+  "shop": {
+    /* ... */
+  },
+  "products": [
+    {
+      /* ... */
+    }
+  ],
+  "limit": 10,
+  "total": 9007199254740991,
+  "page": {
+    "total": 900719925474100,
+    "current": 1
+  }
+}
+```
+
+#### GET `/products?limit=10&page=1&name=''`
+
+```json
+{
+  "products": [
+    {
+      /* ... */
+      "shop": {
+        /* ... */
+      }
+    }
+  ],
+  "limit": 10,
+  "total": 9007199254740991,
+  "page": {
+    "total": 900719925474100,
+    "current": 1
+  }
+}
+```
+
+#### GET `/orders?limit=10&page=1`
+
+```json
+{
+  "orders": [
+    {
+      "id": "tLcLj2JbPUGk0j0cm8CUU",
+      "quantity": 1,
+      "price": "576.00",
+      "createdAt": "2023-10-21T06:52:55.585Z",
+      "product": {
+        /* ... */
+        "shop": {
+          /* ... */
+        }
+      },
+      "users": [
+        {
+          /* ... */
+        }
+      ],
+      "createdAt": "2023-10-21T06:52:55.585Z"
     }
   ],
   "limit": 10,
